@@ -30,7 +30,7 @@ public class AuthenticationHandler implements ContainerRequestFilter {
         
 
         System.out.println("======="+requestContext.getUriInfo().getPath());
-        if(requestContext.getUriInfo().getPath().equals("/v1/auth")||requestContext.getUriInfo().getPath().equals("/card/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/webhook/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/transfer/v1/wallet/notify")||requestContext.getUriInfo().getPath().startsWith("/transfer/v1/wallet/name/enquiry")){
+        if(requestContext.getUriInfo().getPath().equals("/v1/auth")||requestContext.getUriInfo().getPath().equals("/card/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/webhook/v1/transaction/update")||requestContext.getUriInfo().getPath().startsWith("/transfer/v1/wallet/notify")||requestContext.getUriInfo().getPath().startsWith("/transfer/v1/wallet/name/enquiry")||requestContext.getUriInfo().getPath().startsWith("/card/v1/test/payload")){
             
       
         

@@ -77,10 +77,21 @@ public class CardAPI {
      public String ninitiate_Transaction(CardTransactionRequestProxy trx_proxy) throws GenericException{
     
           try{
+              
+              // get merchant info to determine the mode
+           obj =   util.fectchMerchantInfo(trx_proxy.getPublic_key());
+           String mode=null; 
+           if(obj.get("test_publickey").getAsString().equals(trx_proxy.getPublic_key())){
+               mode = "test";
+           }else if(obj.get("live_publickey").getAsString().equals(trx_proxy.getPublic_key())){
+               mode = "live";
+           }
            
                     // format the date
            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
            String datetime=df.format(LocalDateTime.now());
+           
+           
 
         
         // Initiate Entities
@@ -106,6 +117,7 @@ public class CardAPI {
            trx_info.setTransactionEvent(trx_evt);
            trx_info.setSourceIP(trx_proxy.getSourceIP());
            trx_info.setDeviceType(trx_proxy.getDeviceType());
+           trx_info.setMode(mode);
 
            user_info.setCountry(trx_proxy.getCountry());
            user_info.setCurrency(trx_proxy.getCurrency());

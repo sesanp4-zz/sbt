@@ -125,6 +125,7 @@ public class Dao {
     
     
     public com.entities.Transaction ngetTransactionDetails(String reference){
+        System.out.println("reference===="+reference);
       com.entities.Transaction transaction=null;
       try{
           System.out.println("=========== Getting transaction Details started ========");
@@ -319,26 +320,22 @@ public class Dao {
     
      public String nupdateTransactionWithSettlementInfo(String trxn_ref,String settlementCode, String settlementMessage, String time_to_settlement){
       try{
+        
             session= HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             query =  session.createQuery("from Transaction  transaction where transaction.ref=:trxn_ref");
             query.setParameter("trxn_ref", trxn_ref);
-            com.entities.Transaction transaction =(com.entities.Transaction) query.uniqueResult();
-            
-            System.out.println("updating the settlement info on transaction table");
-            
+            com.entities.Transaction transaction =(com.entities.Transaction) query.uniqueResult();            
             transaction.setSettlementCode(settlementCode);
             transaction.setSettlementMessage(settlementMessage);
             transaction.setTime_to_settlement(time_to_settlement);
-            
-             System.out.println("update done");
+            session.getTransaction().commit();
+            System.out.println("update done");
             
               obj = new JsonObject();
               obj.addProperty("code", "S4");
               obj.addProperty("message", "transaction updated with settlement info");
-              session.getTransaction().commit();
-
-              
+             
             return obj.toString();
       }catch(Exception e){
           obj = new JsonObject();
@@ -866,7 +863,8 @@ public class Dao {
       //  System.out.println(new Dao().updateTransaction("CS_001","null","S7","Generic Error Occurred"));
       //  System.out.println(new Dao().getTransactionDetails("CS_001"));
       //  System.out.println(new Gson().toJson(new Dao().ngetTransactionDetails("sp2")));
-        System.out.println(new Gson().toJson(new Dao().getTransferLog("8263850962")));
+      //  System.out.println(new Gson().toJson(new Dao().getTransferLog("8263850962")));
+            new Dao().nupdateTransactionWithSettlementInfo("a22732d7-d43c-48b6-91e3-e585ac931c2f", "00", "Transaction log saved", "2019:08:29 05:39:00");
     }
 
 }

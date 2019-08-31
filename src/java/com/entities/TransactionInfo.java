@@ -5,6 +5,7 @@
  */
 package com.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,6 +52,10 @@ public class TransactionInfo{
         
     @Column(name="clientAppCode")
     String  clientAppCode;
+    
+  
+    @Column(name="mode")
+    String  mode;
     
     
     @Column(name="datetime")
@@ -232,6 +237,14 @@ public class TransactionInfo{
 
     public void setFee(String fee) {
         this.fee = fee;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
    

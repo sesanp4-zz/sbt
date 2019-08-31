@@ -236,6 +236,14 @@ public class AccountHandler {
     
           try{
            
+           obj =   util.fectchMerchantInfo(proxy.getPublic_key());
+           String mode=null; 
+           if(obj.get("test_publickey").getAsString().equals(proxy.getPublic_key())){
+               mode = "test";
+           }else if(obj.get("live_publickey").getAsString().equals(proxy.getPublic_key())){
+               mode = "live";
+           }
+              
                  // format the date
            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy:MM:dd hh:mm:ss");
            String datetime=df.format(LocalDateTime.now());
@@ -264,6 +272,7 @@ public class AccountHandler {
            trx_info.setTransactionEvent(trx_evt);
            trx_info.setSourceIP(proxy.getSourceIP());
            trx_info.setDeviceType(proxy.getDeviceType());
+           trx_info.setMode(mode);
 
            user_info.setCountry(proxy.getCountry());
            user_info.setCurrency(proxy.getCurrency());

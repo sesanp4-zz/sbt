@@ -13,10 +13,15 @@ import com.entities.Event;
 import com.entities.Transactions;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.payload.objects.EventUpdateObject;
 import com.util.Dao;
 import com.util.Utilities;
+import com.v2.payload.Bank;
+import com.v2.payload.LoginProxy;
+import com.v2.payload.Payload;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.concurrent.ExecutorService;
@@ -36,8 +41,10 @@ import javax.ws.rs.core.Response;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 /**
  * REST Web Service
@@ -167,8 +174,18 @@ public class CardService {
     }
     
     
+    @POST
+    @Path("test/payload")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)   
+    public String testDynamic(LoginProxy payload) throws UnsupportedEncodingException, IOException{
+       
+        
+        
+      return obj.toString();
+    }
     
-    
+
     
     
     // old one

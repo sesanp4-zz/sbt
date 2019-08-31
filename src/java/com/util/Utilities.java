@@ -56,8 +56,7 @@ public class Utilities {
     Gson gson = new Gson() ;
     JsonObject obj = new JsonObject();
     JsonObject obj2;
-   // Handler handler = new Handler();
-    
+
      ExecutorService es = Executors.newFixedThreadPool(1);
 
     
@@ -113,8 +112,7 @@ public class Utilities {
         post.setHeader("Content-Type", "application/x-www-form-urlencoded");
         
         String clientId=getAppProperties().getProperty("client_Id");
-        String clientSecret=getAppProperties().getProperty("client_Secret");
-          
+        String clientSecret=getAppProperties().getProperty("client_Secret");  
         List<NameValuePair>list= new ArrayList<NameValuePair>();
         list.add(new BasicNameValuePair("grant_type", "client_credentials"));
         list.add(new BasicNameValuePair("client_id", clientId));
@@ -139,6 +137,8 @@ public class Utilities {
                    obj2.addProperty("currency", obj.get("payload").getAsJsonObject().get("default_currency").getAsString());
                    obj2.addProperty("max_amount", obj.get("payload").getAsJsonObject().get("max_amount").getAsString());
                    obj2.addProperty("min_amount", obj.get("payload").getAsJsonObject().get("min_amount").getAsString());
+                   obj2.addProperty("test_publickey", obj.get("payload").getAsJsonObject().get("test_public_key").getAsString());
+                   obj2.addProperty("live_publickey", obj.get("payload").getAsJsonObject().get("live_public_key").getAsString());
                }else{
                    System.out.println("somefin is wrong");
                    obj2.addProperty("code", "S18");
@@ -238,29 +238,35 @@ public class Utilities {
            obj.addProperty("currency", transaction.getUserinfo().getCurrency());
            obj.addProperty("transactionTime", datetime);
            obj.addProperty("country", transaction.getUserinfo().getCountry());
+           obj.addProperty("description", transaction.getUserinfo().getTransactionInfo().getDescription());
            
           
            System.out.println("the object sending to settlement");
            System.out.println(obj);
            
-           String key=getAppProperties().getProperty("clientid")+":"+getAppProperties().getProperty("clientsecret");
+           String key="client:client";
            String apikey=new String(Base64.getEncoder().encode(key.getBytes()));
            
            post = new HttpPost(getAppProperties().getProperty("settlement_endpoint"));
            post.setHeader("Content-Type", "application/json");
            post.setHeader("Authorization", "Basic "+apikey);
+           post.setHeader("Mode", transaction.getUserinfo().getTransactionInfo().getMode());
            StringEntity ent = new StringEntity(obj.toString());
            post.setEntity(ent);
+            System.out.println("about to execute===="+obj.toString());
            response=client.execute(post);
+            System.out.println("done posting");
            String msg = EntityUtils.toString(response.getEntity());
-           obj = new JsonParser().parse(msg).getAsJsonObject();
-           System.out.println(" ========== response from settlement ========="+obj);
+            System.out.println("raw msg==="+msg);
+          JsonObject data = new JsonParser().parse(msg).getAsJsonObject();
+           System.out.println(" ========== response from settlement ========="+data);
            
            //construct object to be sent for webhook notification
-           es.submit(()->{
+          es.submit(()->{
              // handler.sendNotification(transaction.getUserinfo().getTransactionInfo().getReference());
                System.out.println("notifying client");
                sendNotification(transaction.getUserinfo().getTransactionInfo().getReference());
+               System.out.println("done notifying client");
            });
 
            
@@ -272,7 +278,10 @@ public class Utilities {
            
          
              es.submit(()->{
-                   new Dao().nupdateTransactionWithSettlementInfo(transaction.getUserinfo().getTransactionInfo().getReference(), obj.get("responseCode").getAsString(), obj.get("responseMessage").getAsString(), date_and_time_to_settlement);
+                 System.out.println("updating transaction notificatiuon from settlement thread");
+                 System.out.println("params===="+transaction.getUserinfo().getTransactionInfo().getReference()+"==="+data.toString()+"===="+date_and_time_to_settlement);
+                  new Dao().nupdateTransactionWithSettlementInfo(transaction.getUserinfo().getTransactionInfo().getReference(), data.get("responseCode").getAsString(), data.get("responseMessage").getAsString(), date_and_time_to_settlement);
+                  System.out.println("done updating tran");
               });
            
            // get the response from settlement and log the time sent and settlement response messages, code and the transaction ref
@@ -331,24 +340,7 @@ public class Utilities {
     
     } 
      
-//    public static String getprop(){
-//    
-//        Properties props = new Properties();
-//        try {
-//            String path = System.getProperty("user.dir");
-//            String f = new File(".").getCanonicalPath();
-//            System.out.println(f);
-//            System.out.println("...."+path);
-//            System.out.println(System.getProperty("user.home"));
-//            props.load(new FileReader("/app_properties/app_properties.properties"));
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(Utilities.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(Utilities.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return props.getProperty("west");
-//    }
-//    
+    
     public static void generatecode(){
        DateTimeFormatter df =  DateTimeFormatter.ofPattern("yymmddhhmmss");
        String bankcode="000014";
@@ -380,8 +372,19 @@ public class Utilities {
 //           System.out.println(datetime);
 //  
       //     System.out.println(new Utilities().generateToken("kogLJrZdGb", "$2a$12$m7xjYvZw2f1cnn2dK5p90eanuh.TtPQRyFzDVktPccZwFB/0ARSEi"));
-         System.out.println(new Utilities().getThirdPartyApi());
+       //      System.out.println(new Utilities().getThirdPartyApi());
        // System.out.println("----"+.getAppProperties().getProperty("verify_merchant_info"));
+       
+       
+//        Transaction transaction = new Dao().ngetTransactionDetails("hyRn1567086060876");
+//        System.out.println("sending to settlement now"); 
+//        new Utilities().sendToSettlement(transaction);
+//        System.out.println("done sending to settlement");
+
+        // System.out.println(new Utilities().getMerchantInfo("EQREZEhyRn"));
+           
+
+  //      new Utilities().sendNotification("6ba16309-6efe-4ffc-af97-2c8361bcc20c");
    
     }
     
@@ -442,7 +445,8 @@ public class Utilities {
               
               // Construct Object to be sent  
              Transaction transaction =  dao.ngetTransactionDetails(reference);
-            
+              System.out.println("tran oooo"+gson.toJson(transaction));
+              System.out.println("updating the webhookevent");
               WebhookEvent event = new WebhookEvent();
               event.setGeneratedAt(DateTimeFormater.getRealTimeFormat());
               event.setAmount(transaction.getUserinfo().getTransactionInfo().getAmount());
@@ -453,13 +457,14 @@ public class Utilities {
               event.setStatus(transaction.getStatus());
               
               
-              
+              System.out.println("trans  is still===="+gson.toJson(transaction));
                
               
               //fetch merchant webhook url from User-Management System
               // obj = fectchMerchantInfo(transaction.getUserinfo().getTransactionInfo().getPublic_key());
               obj = getMerchantInfo(transaction.getUserinfo().getTransactionInfo().getPublic_key());
-              String endpoint =obj.get("payload").getAsJsonObject().getAsJsonObject("webhook").get("url").getAsString();
+              System.out.println("the returned obj==="+obj.toString());
+              String endpoint =obj.get("payload").getAsJsonObject().get("webhook").getAsJsonObject().get("url").getAsString();
               System.out.println("====endpoint====="+endpoint);
             
               // fetch private key from
@@ -496,5 +501,6 @@ public class Utilities {
     
     }
       
+
        
 }

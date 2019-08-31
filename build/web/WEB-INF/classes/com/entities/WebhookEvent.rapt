@@ -1,0 +1,12 @@
+com/v2/entities/CoreLog_.java
+com/entities/TransactionInfo_.java
+com/v2/entities/SettlementLog_.java
+com/entities/TransferLog_.java
+com/entities/Transaction_.java
+com/entities/Transactions_.java
+com/entities/WebhookEvent_.java
+com/entities/WalletTransactionNotification_.java
+com/v2/entities/TransactionLog_.java
+com/entities/Event_.java
+com/entities/TransactionEvent_.java
+com/entities/UserInfo_.java

@@ -43,16 +43,14 @@ Contributor(s):
   <session-factory>
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <!-- Test -->
-   <!--  
     <property name="hibernate.connection.url">jdbc:mysql://fcmb.cr6kme5bqnc9.us-east-2.rds.amazonaws.com:3306/sbt_core</property>
     <property name="hibernate.connection.username">fcmb</property>
     <property name="hibernate.connection.password">centricgwsbit_138#_123</property>
-    -->
     <!--End-->
-    <!-- Live -->  
-    <property name="hibernate.connection.url">jdbc:mysql://sbit.crgggd5jvz4g.eu-west-2.rds.amazonaws.com:3306/sbt_core</property>
+    <!-- Live -->
+    <!-- <property name="hibernate.connection.url">jdbc:mysql://sbit.crgggd5jvz4g.eu-west-2.rds.amazonaws.com:3306/sbt_core</property>
     <property name="hibernate.connection.username">sbt_settlement</property>
-    <property name="hibernate.connection.password">sbt_settlement_123</property>
+    <property name="hibernate.connection.password">sbt_settlement_123</property>-->
     <!--End-->
     <property name="hibernate.hbm2ddl.auto">update</property>
     <property name="hibernate.show_sql">true</property>
@@ -64,5 +62,8 @@ Contributor(s):
     <mapping class="com.entities.WebhookEvent"/>
     <mapping class="com.entities.TransferLog" file="" jar="" package="" resource=""/>
     <mapping class="com.entities.WalletTransactionNotification"/>
+    <mapping class="com.v2.entities.TransactionLog"/>
+    <mapping class="com.v2.entities.SettlementLog"/>
+    <mapping class="com.v2.entities.CoreLog"/>
   </session-factory>
 </hibernate-configuration>
